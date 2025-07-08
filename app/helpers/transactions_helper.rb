@@ -7,7 +7,8 @@ module TransactionsHelper
       { key: "amount_filter", label: "Amount", icon: "hash" },
       { key: "category_filter", label: "Category", icon: "shapes" },
       { key: "tag_filter", label: "Tag", icon: "tags" },
-      { key: "merchant_filter", label: "Merchant", icon: "store" }
+      { key: "merchant_filter", label: "Merchant", icon: "store" },
+      { key: "parent_entry_filter", label: "Parent Entry", icon: "git-branch" }
     ]
   end
 

@@ -1,0 +1,42 @@
+<%# locals: (form:) %>
+<div data-controller="list-filter">
+  <div class="relative">
+    <input type="search" autocomplete="off" placeholder="Filter parent entries" data-list-filter-target="input" data-action="input->list-filter#filter" class="block w-full bg-container border border-secondary rounded-md py-2 pl-10 pr-3 focus:ring-gray-500 sm:text-sm">
+    <%= icon("search", class: "absolute inset-y-0 left-2 top-1/2 transform -translate-y-1/2") %>
+  </div>
+  <div class="my-2" id="list" data-list-filter-target="list">
+    <!-- No parent option -->
+    <div class="filterable-item flex items-center gap-2 p-2" data-filter-name="No parent">
+      <%= form.check_box :parent_entries,
+                         {
+                           multiple: true,
+                           checked: @q[:parent_entries]&.include?("No parent"),
+                           class: "checkbox checkbox--light"
+                         },
+                         "No parent",
+                         nil %>
+      <%= form.label :parent_entries, value: "No parent", class: "text-sm text-primary flex items-center gap-2" do %>
+        <%= icon("circle-dashed", class: "text-secondary") %>
+        <span>No parent</span>
+      <% end %>
+    </div>
+
+    <!-- Parent entries with child entries -->
+    <% Current.family.entries.joins(:child_entries).distinct.includes(:entryable).each do |entry| %>
+      <div class="filterable-item flex items-center gap-2 p-2" data-filter-name="<%= entry.detailed_display_text %>">
+        <%= form.check_box :parent_entries,
+                           {
+                             multiple: true,
+                             checked: @q[:parent_entries]&.include?(entry.name),
+                             class: "checkbox checkbox--light"
+                           },
+                           entry.name,
+                           nil %>
+        <%= form.label :parent_entries, value: entry.name, class: "text-sm text-primary flex items-center gap-2" do %>
+          <%= icon("git-branch", class: "text-secondary") %>
+          <span class="truncate"><%= entry.detailed_display_text %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

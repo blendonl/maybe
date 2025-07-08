@@ -14,7 +14,6 @@ class TransactionsController < ApplicationController
     @search = Transaction::Search.new(Current.family, filters: @q)
 
     base_scope = @search.transactions_scope
-                       .reverse_chronological
                        .includes(
                          { entry: :account },
                          :category, :merchant, :tags,
@@ -150,9 +149,9 @@ class TransactionsController < ApplicationController
       cleaned_params = params.fetch(:q, {})
               .permit(
                 :start_date, :end_date, :search, :amount,
-                :amount_operator, :active_accounts_only,
+                :amount_operator, :active_accounts_only, :sort_by,
                 accounts: [], account_ids: [],
-                categories: [], merchants: [], types: [], tags: []
+                categories: [], merchants: [], types: [], tags: [], parent_entries: []
               )
               .to_h
               .compact_blank

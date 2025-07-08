@@ -45,6 +45,39 @@
 
   <%= render "summary", totals: @search.totals %>
 
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-secondary">Sort by:</span>
+      <%= form_with url: transactions_path, method: :get, local: true, class: "flex items-center gap-2" do |f| %>
+        <%= f.select "q[sort_by]", 
+            options_for_select([
+              ["Date (newest first)", "date_desc"],
+              ["Date (oldest first)", "date_asc"],
+              ["Parent Entry", "parent_entry"],
+              ["Name (A-Z)", "name_asc"],
+              ["Name (Z-A)", "name_desc"],
+              ["Amount (lowest first)", "amount_asc"],
+              ["Amount (highest first)", "amount_desc"]
+            ], @q[:sort_by] || "date_desc"),
+            {},
+            { 
+              class: "form-field__input text-sm px-2 py-1 min-w-0",
+              onchange: "this.form.submit()"
+            } %>
+        <% @q.each do |key, value| %>
+          <% next if key == "sort_by" %>
+          <% if value.is_a?(Array) %>
+            <% value.each do |v| %>
+              <%= f.hidden_field "q[#{key}][]", value: v %>
+            <% end %>
+          <% else %>
+            <%= f.hidden_field "q[#{key}]", value: value %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
   <div id="transactions"
        data-controller="bulk-select"
        data-bulk-select-singular-label-value="<%= t(".transaction") %>"

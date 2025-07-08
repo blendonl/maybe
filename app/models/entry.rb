@@ -45,6 +45,14 @@ class Entry < ApplicationRecord
     )
   }
 
+  scope :by_parent_entry, -> {
+    left_joins(:parent_entry).order(
+      Arel.sql("CASE WHEN entries.parent_entry_id IS NULL THEN 1 ELSE 0 END"),
+      "parent_entries.name ASC NULLS LAST",
+      :name
+    )
+  }
+
   def classification
     amount.negative? ? "income" : "expense"
   end
@@ -69,6 +77,34 @@ class Entry < ApplicationRecord
 
   def linked?
     plaid_id.present?
+  end
+
+  def parent_entry_display_text
+    return "" unless parent_entry.present?
+    
+    parts = [name]
+    parts << date.strftime("%m/%d/%Y")
+    
+    if transaction? && transaction.category.present?
+      parts << transaction.category.name
+    end
+    
+    parts << amount.format
+    
+    parts.join(" • ")
+  end
+
+  def detailed_display_text
+    parts = [name]
+    parts << date.strftime("%m/%d/%Y")
+    
+    if transaction? && transaction.category.present?
+      parts << transaction.category.name
+    end
+    
+    parts << amount.format
+    
+    parts.join(" • ")
   end
 
   private

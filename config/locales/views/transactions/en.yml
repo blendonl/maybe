@@ -15,6 +15,7 @@ en:
       none: (none)
       note_label: Notes
       note_placeholder: Enter a note
+      parent_entry_label: Parent Entry
       submit: Add transaction
       tags_label: Tags
       transfer: Transfer
@@ -37,6 +38,7 @@ en:
       note_label: Notes
       note_placeholder: Enter a note
       overview: Overview
+      parent_entry_label: Parent Entry
       settings: Settings
       tags_label: Tags
       uncategorized: "(uncategorized)"

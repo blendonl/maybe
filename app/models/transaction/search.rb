@@ -13,6 +13,8 @@ class Transaction::Search
   attribute :categories, array: true
   attribute :merchants, array: true
   attribute :tags, array: true
+  attribute :parent_entries, array: true
+  attribute :sort_by, :string, default: "date_desc"
   attribute :active_accounts_only, :boolean, default: true
 
   attr_reader :family
@@ -32,10 +34,12 @@ class Transaction::Search
       query = apply_type_filter(query, types)
       query = apply_merchant_filter(query, merchants)
       query = apply_tag_filter(query, tags)
+      query = apply_parent_entry_filter(query, parent_entries)
       query = EntrySearch.apply_search_filter(query, search)
       query = EntrySearch.apply_date_filters(query, start_date, end_date)
       query = EntrySearch.apply_amount_filter(query, amount, amount_operator)
       query = EntrySearch.apply_accounts_filter(query, accounts, account_ids)
+      query = apply_sort_order(query, sort_by)
 
       query
     end
@@ -139,5 +143,55 @@ class Transaction::Search
     def apply_tag_filter(query, tags)
       return query unless tags.present?
       query.joins(:tags).where(tags: { name: tags })
+    end
+
+    def apply_parent_entry_filter(query, parent_entries)
+      return query unless parent_entries.present?
+      
+      # Handle "No parent" option
+      if parent_entries.include?("No parent")
+        other_parent_entries = parent_entries - ["No parent"]
+        if other_parent_entries.present?
+          # Show entries with no parent OR entries with specified parent entries
+          query.joins(:entry).where(
+            "entries.parent_entry_id IS NULL OR entries.parent_entry_id IN (
+              SELECT id FROM entries WHERE name IN (?)
+            )",
+            other_parent_entries
+          )
+        else
+          # Show only entries with no parent
+          query.joins(:entry).where(entries: { parent_entry_id: nil })
+        end
+      else
+        # Show entries with specified parent entries
+        query.joins(:entry).where(
+          "entries.parent_entry_id IN (
+            SELECT id FROM entries WHERE name IN (?)
+          )",
+          parent_entries
+        )
+      end
+    end
+
+    def apply_sort_order(query, sort_by)
+      case sort_by
+      when "date_asc"
+        query.joins(:entry).merge(Entry.chronological)
+      when "date_desc"
+        query.joins(:entry).merge(Entry.reverse_chronological)
+      when "parent_entry"
+        query.joins(:entry).merge(Entry.by_parent_entry)
+      when "name_asc"
+        query.joins(:entry).order("entries.name ASC")
+      when "name_desc"
+        query.joins(:entry).order("entries.name DESC")
+      when "amount_asc"
+        query.joins(:entry).order("ABS(entries.amount) ASC")
+      when "amount_desc"
+        query.joins(:entry).order("ABS(entries.amount) DESC")
+      else
+        query.joins(:entry).merge(Entry.reverse_chronological)
+      end
     end
 end

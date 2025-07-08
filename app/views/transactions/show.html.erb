@@ -48,7 +48,7 @@
 
             <%= f.collection_select :parent_entry_id,
                     Current.family.entries.alphabetically.where.not(id: @entry.id),
-                  :id, :name,
+                  :id, :detailed_display_text,
                   { label: t(".parent_entry_label"),
                     class: "text-subdued", include_blank: t(".none") },
                   "data-auto-submit-form-target": "auto" %>
