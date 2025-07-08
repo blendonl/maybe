@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_08_113601) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_08_114932) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -215,8 +215,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_08_113601) do
     t.boolean "excluded", default: false
     t.string "plaid_id"
     t.jsonb "locked_attributes", default: {}
+    t.uuid "parent_entry_id"
     t.index ["account_id"], name: "index_entries_on_account_id"
     t.index ["import_id"], name: "index_entries_on_import_id"
+    t.index ["parent_entry_id"], name: "index_entries_on_parent_entry_id"
   end
 
   create_table "exchange_rates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -806,6 +808,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_08_113601) do
   add_foreign_key "categories", "families"
   add_foreign_key "chats", "users"
   add_foreign_key "entries", "accounts"
+  add_foreign_key "entries", "entries", column: "parent_entry_id"
   add_foreign_key "entries", "imports"
   add_foreign_key "holdings", "accounts"
   add_foreign_key "holdings", "securities"
