@@ -39,7 +39,6 @@ class Transaction::Search
       query = EntrySearch.apply_date_filters(query, start_date, end_date)
       query = EntrySearch.apply_amount_filter(query, amount, amount_operator)
       query = EntrySearch.apply_accounts_filter(query, accounts, account_ids)
-      query = apply_sort_order(query, sort_by)
 
       query
     end
@@ -174,24 +173,4 @@ class Transaction::Search
       end
     end
 
-    def apply_sort_order(query, sort_by)
-      case sort_by
-      when "date_asc"
-        query.joins(:entry).merge(Entry.chronological)
-      when "date_desc"
-        query.joins(:entry).merge(Entry.reverse_chronological)
-      when "parent_entry"
-        query.joins(:entry).merge(Entry.by_parent_entry)
-      when "name_asc"
-        query.joins(:entry).order("entries.name ASC")
-      when "name_desc"
-        query.joins(:entry).order("entries.name DESC")
-      when "amount_asc"
-        query.joins(:entry).order("ABS(entries.amount) ASC")
-      when "amount_desc"
-        query.joins(:entry).order("ABS(entries.amount) DESC")
-      else
-        query.joins(:entry).merge(Entry.reverse_chronological)
-      end
-    end
 end
