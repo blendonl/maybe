@@ -14,7 +14,6 @@ class Transaction::Search
   attribute :merchants, array: true
   attribute :tags, array: true
   attribute :parent_entries, array: true
-  attribute :sort_by, :string, default: "date_desc"
   attribute :active_accounts_only, :boolean, default: true
 
   attr_reader :family
