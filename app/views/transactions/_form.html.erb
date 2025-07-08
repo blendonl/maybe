@@ -30,6 +30,11 @@
   </section>
 
   <%= render DisclosureComponent.new(title: t(".details")) do %>
+    <%= f.collection_select :parent_entry_id,
+                Current.family.entries.alphabetically,
+              :id, :name,
+              { label: t(".parent_entry_label"),
+                class: "text-subdued", include_blank: t(".none") } %>
     <%= f.fields_for :entryable do |ef| %>
       <%= ef.select :tag_ids,
                     Current.family.tags.alphabetically.pluck(:name, :id),

@@ -46,14 +46,12 @@
                     "data-auto-submit-form-target": "auto" %>
             <% end %>
 
-            <%= f.fields_for :entryable do |ef| %>
-              <%= ef.collection_select :entry_id,
-                      Current.family.entry.alphabetically,
-                    :id, :name,
-                    { label: t(".entry_name_detailed"),
-                      class: "text-subdued", include_blank: t(".uncategorized") },
-                    "data-auto-submit-form-target": "auto" %>
-            <% end %>
+            <%= f.collection_select :parent_entry_id,
+                    Current.family.entries.alphabetically.where.not(id: @entry.id),
+                  :id, :name,
+                  { label: t(".parent_entry_label"),
+                    class: "text-subdued", include_blank: t(".none") },
+                  "data-auto-submit-form-target": "auto" %>
           <% end %>
 
         <% end %>

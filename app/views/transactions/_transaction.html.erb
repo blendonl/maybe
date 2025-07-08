@@ -62,6 +62,16 @@
                   </div>
 
                   <div class="flex items-center gap-1 flex-shrink-0">
+                    <% if entry.parent_entry.present? %>
+                      <span class="text-blue-500" title="Child entry of: <%= entry.parent_entry.name %>">
+                        <%= icon "corner-down-right", size: "sm", color: "current" %>
+                      </span>
+                    <% elsif entry.child_entries.any? %>
+                      <span class="text-green-500" title="Parent entry with <%= pluralize(entry.child_entries.count, 'child') %>">
+                        <%= icon "corner-down-left", size: "sm", color: "current" %>
+                      </span>
+                    <% end %>
+                    
                     <% if transaction.one_time? %>
                       <span class="text-orange-500" title="One-time <%= entry.amount.negative? ? "income" : "expense" %> (excluded from averages)">
                         <%= icon "asterisk", size: "sm", color: "current" %>
@@ -84,6 +94,12 @@
                         account_path(entry.account, tab: "transactions", focused_record_id: entry.id),
                         data: { turbo_frame: "_top" },
                         class: "hover:underline" %>
+                  <% end %>
+                  
+                  <% if entry.parent_entry.present? %>
+                    <span class="text-secondary"> • Child of: <%= entry.parent_entry.name %></span>
+                  <% elsif entry.child_entries.any? %>
+                    <span class="text-secondary"> • Parent (<%= pluralize(entry.child_entries.count, 'child') %>)</span>
                   <% end %>
                 </div>
               </div>
