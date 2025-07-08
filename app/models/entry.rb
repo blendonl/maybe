@@ -9,6 +9,10 @@ class Entry < ApplicationRecord
   belongs_to :transfer, optional: true
   belongs_to :import, optional: true
 
+  belongs_to :parent_entry, class_name: 'Entry', optional: true
+  has_many :child_entries, class_name: 'Entry', foreign_key: 'parent_entry_id'
+  
+
   delegated_type :entryable, types: Entryable::TYPES, dependent: :destroy
   accepts_nested_attributes_for :entryable
 
