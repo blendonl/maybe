@@ -23,6 +23,8 @@ class Entry < ApplicationRecord
     joins(:account).where(accounts: { status: [ "draft", "active" ] })
   }
 
+  scope :alphabetically, -> { order(:name) }
+
   scope :chronological, -> {
     order(
       date: :asc,

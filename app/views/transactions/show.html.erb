@@ -45,6 +45,15 @@
                       class: "text-subdued", include_blank: t(".uncategorized") },
                     "data-auto-submit-form-target": "auto" %>
             <% end %>
+
+            <%= f.fields_for :entryable do |ef| %>
+              <%= ef.collection_select :entry_id,
+                      Current.family.entry.alphabetically,
+                    :id, :name,
+                    { label: t(".entry_name_detailed"),
+                      class: "text-subdued", include_blank: t(".uncategorized") },
+                    "data-auto-submit-form-target": "auto" %>
+            <% end %>
           <% end %>
 
         <% end %>
