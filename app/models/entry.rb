@@ -89,7 +89,7 @@ class Entry < ApplicationRecord
       parts << transaction.category.name
     end
     
-    parts << amount.format
+    parts << amount.abs
     
     parts.join(" • ")
   end
@@ -102,7 +102,7 @@ class Entry < ApplicationRecord
       parts << transaction.category.name
     end
     
-    parts << amount.format
+    parts << amount.abs
     
     parts.join(" • ")
   end
